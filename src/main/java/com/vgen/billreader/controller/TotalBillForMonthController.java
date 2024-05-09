@@ -40,9 +40,8 @@ public class TotalBillForMonthController {
 		this.totalBillForMonthServices=totalBillForMonthServices;
 	}
 
-	String[]phoneNumbers= {"325191128-00001","201-702-3929","330-501-4669","469-617-1147","803-693-2543",
-			"803-792-2439","803-992-3317","803-992-3443",
-			"980-616-1500","803-203-9530","773-575-9355","615-487-3250","615-487-3250","803-693-2505"};
+	String[]phoneNumbers= {"325191128-00001","201-702-3929","330-501-4669","469-617-1147","773-575-9355","803-693-2543",
+			"803-792-2439","803-992-3317","803-992-3443","803-203-9530","469-617-1147","980-616-1500","615-487-3250","615-487-3250","803-693-2505"};
     @PostMapping
 	public ResponseEntity<String> upload(@RequestParam("file") MultipartFile[] multipartfiles) {
 		String monthName;
@@ -103,6 +102,10 @@ public class TotalBillForMonthController {
 								if(number==phoneNumbers.length) {
 									break ;
 								}
+								if(xcell.getStringCellValue().equals("activity")){
+
+									continue ;
+								}
 
 								if(xcell.getStringCellValue().equals(phoneNumbers[number])) {
 									if(phoneNumbers[number].equals("325191128-00001")) {
@@ -149,7 +152,7 @@ public class TotalBillForMonthController {
 										if (!(MonthAndYear.isEmpty())) {
 											document.close();
 
-											filefoundnames[filefound++]=files.getOriginalFilename()+"\n";
+											filefoundnames[filefound++]="\n"+files.getOriginalFilename();
 											continue Nextfile;
 
 										}
@@ -174,10 +177,10 @@ public class TotalBillForMonthController {
 									if (row.getCell(2).getCellTypeEnum()==CellType.STRING) {
 										System.out.println(row.getCell(2).getStringCellValue());
 										if(row.getCell(2).getStringCellValue().charAt(0) != '$') {
-
-											row=	sheet2.getRow((rowindex)-1);
-											totalBillForMonthdto.Name=row.getCell(0).getStringCellValue()+" "+row.getCell(1).getStringCellValue();
-
+											if (row.getCell(2).getStringCellValue().charAt(0) != '-') {
+												row = sheet2.getRow((rowindex) - 1);
+												totalBillForMonthdto.Name = row.getCell(0).getStringCellValue() + " " + row.getCell(1).getStringCellValue();
+											}
 										}
 
 											totalBillForMonthdto.BillAmount = row.getCell(2).getStringCellValue();
@@ -204,10 +207,10 @@ public class TotalBillForMonthController {
 						number=number+1;
 					}
 
-					}
+				}
 				file.close();
 				workbook.close();
-				 fileuploadednames[fileuploaded++]=files.getOriginalFilename()+"\n";
+				 fileuploadednames[fileuploaded++]="\n"+files.getOriginalFilename();
 				System.out.println("PDF content written to DB successfully "+files.getOriginalFilename());
 			 }
 		 } catch (IOException e) {
@@ -231,12 +234,12 @@ public class TotalBillForMonthController {
 		 }
 
 		 return ResponseEntity.status(HttpStatus.FOUND)
-		 		.body(String.format("File not Uploaded: %s" ,out+ " files are  fond "+filefound+ "\n\n"+"Files Uploaded "+fileuploaded+in));
+		 		.body(String.format("File not Uploaded: %s" ,out+ " files are  fond "+filefound+ "\n\n"+"Files Uploaded \n"+fileuploaded+in));
 
 	 }
 
 		 return ResponseEntity.status(HttpStatus.OK)
-					.body(String.format("Files  Uploaded: %s", in+ " files are Ok "+fileuploaded));
+					.body(String.format("Files  Uploaded: %s", in+ "\n files are Ok "+fileuploaded));
 
 
 
